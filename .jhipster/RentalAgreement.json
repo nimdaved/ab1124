@@ -1,0 +1,32 @@
+{
+  "annotations": {
+    "changelogDate": "20241115201813"
+  },
+  "applications": ["toolrent"],
+  "fields": [
+    {
+      "fieldName": "agreement",
+      "fieldType": "TextBlob",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "RentalAgreementStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "PENDING,ACCEPTED,REJEJECTED"
+    }
+  ],
+  "name": "RentalAgreement",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "rental",
+      "relationshipName": "rental",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass",
+  "skipClient": true
+}

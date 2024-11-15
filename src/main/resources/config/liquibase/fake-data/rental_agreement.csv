@@ -1,0 +1,11 @@
+id;agreement;status
+1;../fake-data/blob/hipster.txt;PENDING
+2;../fake-data/blob/hipster.txt;PENDING
+3;../fake-data/blob/hipster.txt;ACCEPTED
+4;../fake-data/blob/hipster.txt;ACCEPTED
+5;../fake-data/blob/hipster.txt;REJEJECTED
+6;../fake-data/blob/hipster.txt;REJEJECTED
+7;../fake-data/blob/hipster.txt;PENDING
+8;../fake-data/blob/hipster.txt;REJEJECTED
+9;../fake-data/blob/hipster.txt;PENDING
+10;../fake-data/blob/hipster.txt;PENDING

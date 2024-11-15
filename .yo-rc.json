@@ -1,0 +1,21 @@
+{
+  "generator-jhipster": {
+    "applicationType": "monolith",
+    "baseName": "toolrent",
+    "buildTool": "gradle",
+    "cacheProvider": "no",
+    "databaseType": "sql",
+    "devDatabaseType": "h2Memory",
+    "devServerPort": 4200,
+    "enableSwaggerCodegen": true,
+    "entities": ["Tool", "ToolInventory", "Rental", "RentalAgreement", "Charge", "Customer", "Holiday"],
+    "jhipsterVersion": "8.7.3",
+    "jwtSecretKey": "ZWNiMTBhMWY0NjczMzY2YWFmYWU2MTk1NmRiZTMwMjAwNzU5ZjAxZTI5ZmVkMzBmNGExOTIxODgxZTY3OWNhYTJiMmUyOWZlODcxZTI3ZjI2ZmM3Y2Q4OTA0Y2QyZTJlNThlM2IyMjY4ZTE2MWMwMDkxOTdkZDM2YWFlNzEzNGE=",
+    "languages": ["en"],
+    "lastLiquibaseTimestamp": 1731702073000,
+    "nativeLanguage": "en",
+    "packageName": "org.nimdaved.toolrent",
+    "prodDatabaseType": "postgresql",
+    "serverPort": "8080"
+  }
+}

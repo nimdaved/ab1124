@@ -1,0 +1,25 @@
+{
+  "annotations": {
+    "changelogDate": "20241115202013"
+  },
+  "applications": ["toolrent"],
+  "documentation": "The concept of Customer is not specified in the requirents.\\nThe entity created as an example of handling \"unspoken\" implicit\\ndomain requirement",
+  "fields": [
+    {
+      "fieldName": "fullName",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "email",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "phoneNumber",
+      "fieldType": "String"
+    }
+  ],
+  "name": "Customer",
+  "relationships": [],
+  "searchEngine": "no",
+  "skipClient": true
+}

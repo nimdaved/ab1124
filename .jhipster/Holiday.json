@@ -1,0 +1,45 @@
+{
+  "annotations": {
+    "changelogDate": "20241115202113"
+  },
+  "applications": ["toolrent"],
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "minlength", "maxlength"],
+      "fieldValidateRulesMaxlength": "128",
+      "fieldValidateRulesMinlength": "3"
+    },
+    {
+      "fieldName": "holidayType",
+      "fieldType": "HolidayType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "EXACT_DAY_OF_MONTH,FIRST_DAY_OF_WEEK_IN_MONTH,LAST_DAY_OF_WEEK_IN_MONTH"
+    },
+    {
+      "fieldName": "monthNumber",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min", "max"],
+      "fieldValidateRulesMax": "12",
+      "fieldValidateRulesMin": "1"
+    },
+    {
+      "documentation": "Day of month (1..31) when holidayType is EXACT_DAY_OF_MONTH,\\notherwise day of week (1..7). @see ISO-8601",
+      "fieldName": "dayNumber",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min", "max"],
+      "fieldValidateRulesMax": "31",
+      "fieldValidateRulesMin": "1"
+    },
+    {
+      "fieldName": "observedOnClosestWeekday",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Holiday",
+  "relationships": [],
+  "searchEngine": "no",
+  "skipClient": true
+}

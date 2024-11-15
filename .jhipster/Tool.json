@@ -1,0 +1,44 @@
+{
+  "annotations": {
+    "changelogDate": "20241115201513"
+  },
+  "applications": ["toolrent"],
+  "fields": [
+    {
+      "fieldName": "code",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "unique", "minlength", "maxlength"],
+      "fieldValidateRulesMaxlength": "16",
+      "fieldValidateRulesMinlength": "4",
+      "options": {
+        "id": true
+      }
+    },
+    {
+      "fieldName": "toolType",
+      "fieldType": "ToolType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "LADDER (Ladder),CHINSAW (Chainsaw),JACKHUMMER (Jackhummer)"
+    },
+    {
+      "fieldName": "brand",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "minlength", "maxlength"],
+      "fieldValidateRulesMaxlength": "128",
+      "fieldValidateRulesMinlength": "3"
+    }
+  ],
+  "name": "Tool",
+  "relationships": [
+    {
+      "otherEntityName": "toolInventory",
+      "otherEntityRelationshipName": "tool",
+      "relationshipName": "toolInventory",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass",
+  "skipClient": true
+}

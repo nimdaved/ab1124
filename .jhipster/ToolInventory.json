@@ -1,0 +1,48 @@
+{
+  "annotations": {
+    "changelogDate": "20241115201613"
+  },
+  "applications": ["toolrent"],
+  "documentation": "The concept of ToolInventory is not specified in the requirents.\\nThe entity created as an example of handling \"unspoken\" implicit\\ndomain requirements",
+  "fields": [
+    {
+      "fieldName": "location",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "minlength", "maxlength"],
+      "fieldValidateRulesMaxlength": "64",
+      "fieldValidateRulesMinlength": "3"
+    },
+    {
+      "fieldName": "stockCount",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min", "max"],
+      "fieldValidateRulesMax": "1000",
+      "fieldValidateRulesMin": "0"
+    },
+    {
+      "fieldName": "checkedOutCount",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min", "max"],
+      "fieldValidateRulesMax": "1000",
+      "fieldValidateRulesMin": "0"
+    },
+    {
+      "fieldName": "onHoldCount",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min", "max"],
+      "fieldValidateRulesMax": "1000",
+      "fieldValidateRulesMin": "0"
+    }
+  ],
+  "name": "ToolInventory",
+  "relationships": [
+    {
+      "otherEntityName": "tool",
+      "relationshipName": "tool",
+      "relationshipSide": "right",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "skipClient": true
+}

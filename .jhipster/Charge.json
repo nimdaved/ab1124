@@ -1,0 +1,41 @@
+{
+  "annotations": {
+    "changelogDate": "20241115201913"
+  },
+  "applications": ["toolrent"],
+  "fields": [
+    {
+      "fieldName": "toolType",
+      "fieldType": "ToolType",
+      "fieldValues": "LADDER (Ladder),CHINSAW (Chainsaw),JACKHUMMER (Jackhummer)"
+    },
+    {
+      "documentation": "Use BigDecimal for the monetary amount as \"middle ground\"\\nbetween precision issues of \"double\" and complexities of \"Money\"",
+      "fieldName": "dailyCharge",
+      "fieldType": "BigDecimal",
+      "fieldValidateRules": ["required", "min", "max"],
+      "fieldValidateRulesMax": "1000.00",
+      "fieldValidateRulesMin": "0.00"
+    },
+    {
+      "fieldName": "weekdayCharge",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "weekendCharge",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "holidayCharge",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Charge",
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceClass",
+  "skipClient": true
+}

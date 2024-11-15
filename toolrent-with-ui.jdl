@@ -1,0 +1,147 @@
+
+application {
+  config {
+    baseName toolrent
+    applicationType monolith
+    serverPort 8080
+    buildTool gradle
+    packageName org.nimdaved.toolrent
+    cacheProvider no
+    databaseType sql
+    devDatabaseType h2Memory
+    prodDatabaseType postgresql
+    enableSwaggerCodegen true
+  }
+  entities Tool, ToolInventory, Rental, RentalAgreement, Charge, Customer, Holiday
+}
+
+
+
+enum ToolType {
+	LADDER(Ladder), 
+    CHINSAW(Chainsaw),
+    JACKHUMMER(Jackhummer)
+}
+
+enum RentalStatus {
+	CREATED,
+	CHECKED_OUT,
+    CHECKED_IN,
+    CANCELLED
+}
+
+enum RentalAgreementStatus {
+	PENDING,
+	ACCEPTED, 
+    REJEJECTED
+}
+
+entity Tool {
+	@Id code String required unique minlength(4) maxlength(16)
+    toolType ToolType required
+    brand String required minlength(3) maxlength(128)
+
+}
+
+/** 
+ * The concept of ToolInventory is not specified in the requirents. 
+ * The entity created as an example of handling "unspoken" implicit
+ * domain requirements
+ */
+entity ToolInventory {
+	location String required minlength(3) maxlength(64)
+	stockCount Integer required min(0) max(1000)
+	checkedOutCount Integer required min(0) max(1000)
+	onHoldCount  Integer required min(0) max(1000)
+}
+
+entity Rental {
+/** Use LocalDate (vs. ZonedDateTime) as timezone is not strictly required */
+	checkOutDate LocalDate required
+    dayCount Integer required min(1) max(365)
+    discountPercent Integer required min(0) max(100)
+    status RentalStatus required
+	chargeAmount BigDecimal required min(0.00)
+}
+
+
+
+entity Charge {
+	toolType ToolType
+/** Use BigDecimal for the monetary amount as "middle ground"
+  * between precision issues of "double" and complexities of "Money"
+  */
+	dailyCharge BigDecimal required min(0.00) max(1000.00)
+	weekdayCharge Boolean  required
+	weekendCharge Boolean  required
+    holidayCharge Boolean  required
+}
+
+entity RentalAgreement {
+	agreement TextBlob required
+	status RentalAgreementStatus required
+
+}
+
+/** 
+ * The concept of Customer is not specified in the requirents. 
+ * The entity created as an example of handling "unspoken" implicit
+ * domain requirement
+ */
+entity Customer {
+	fullName String
+	email String
+	phoneNumber String
+}
+
+entity Holiday {
+	name String required minlength(3) maxlength(128)
+	holidayType HolidayType required
+    monthNumber Integer required min(1) max(12)
+/** 
+ * Day of month (1..31) when holidayType is EXACT_DAY_OF_MONTH,
+ * otherwise day of week (1..7). @see ISO-8601  
+ */
+    dayNumber Integer required min(1) max(31)
+    observedOnClosestWeekday Boolean required 
+
+}
+
+enum HolidayType {
+	EXACT_DAY_OF_MONTH,
+	FIRST_DAY_OF_WEEK_IN_MONTH,
+	LAST_DAY_OF_WEEK_IN_MONTH
+}
+
+relationship OneToOne {
+    RentalAgreement{rental} to Rental
+}
+
+
+relationship ManyToOne {
+	Rental{customer} to Customer
+    Rental{tool} to Tool
+    Tool to ToolInventory{tool}
+}
+
+
+/** Set pagination options for some entities */
+paginate Rental, RentalAgreement with pagination
+
+/** 
+ * Use Data Transfer Objects (DTO) for some domain entities to allow separate migration paths
+ * for the API and domain entities 
+ */
+/** dto Rental, RentalAgreement, Tool, ToolInventory, Customer with mapstruct */
+
+
+/**
+ * Service options: 
+ * "serviceClass " - Curent level of complexity does not warrant service interfaces 
+ */
+service Rental, RentalAgreement, Charge, Tool with serviceClass
+
+/** do not generate UI code, TODO: uncomment line below when done with POC */
+skipClient all
+
+

@@ -1,0 +1,59 @@
+{
+  "annotations": {
+    "changelogDate": "20241115201713"
+  },
+  "applications": ["toolrent"],
+  "fields": [
+    {
+      "documentation": "Use LocalDate (vs. ZonedDateTime) as timezone is not strictly required",
+      "fieldName": "checkOutDate",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "dayCount",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min", "max"],
+      "fieldValidateRulesMax": "365",
+      "fieldValidateRulesMin": "1"
+    },
+    {
+      "fieldName": "discountPercent",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min", "max"],
+      "fieldValidateRulesMax": "100",
+      "fieldValidateRulesMin": "0"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "RentalStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "CREATED,CHECKED_OUT,CHECKED_IN,CANCELLED"
+    },
+    {
+      "fieldName": "chargeAmount",
+      "fieldType": "BigDecimal",
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "0.00"
+    }
+  ],
+  "name": "Rental",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "customer",
+      "relationshipName": "customer",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "tool",
+      "relationshipName": "tool",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass",
+  "skipClient": true
+}
