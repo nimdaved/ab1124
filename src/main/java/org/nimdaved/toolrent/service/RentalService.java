@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.StreamSupport;
 import org.nimdaved.toolrent.domain.Rental;
 import org.nimdaved.toolrent.repository.RentalRepository;
+import org.nimdaved.toolrent.service.dto.RentalRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,10 @@ public class RentalService {
 
     public RentalService(RentalRepository rentalRepository) {
         this.rentalRepository = rentalRepository;
+    }
+
+    public Rental create(RentalRequest rental) {
+        return null;
     }
 
     /**

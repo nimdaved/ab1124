@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.nimdaved.toolrent.domain.Rental;
 import org.nimdaved.toolrent.repository.RentalRepository;
 import org.nimdaved.toolrent.service.RentalService;
+import org.nimdaved.toolrent.service.dto.RentalRequest;
 import org.nimdaved.toolrent.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,15 +57,14 @@ public class RentalResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
-    public ResponseEntity<Rental> createRental(@Valid @RequestBody Rental rental) throws URISyntaxException {
+    public ResponseEntity<Rental> createRental(@Valid @RequestBody RentalRequest rental) throws URISyntaxException {
         LOG.debug("REST request to save Rental : {}", rental);
-        if (rental.getId() != null) {
-            throw new BadRequestAlertException("A new rental cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        rental = rentalService.save(rental);
-        return ResponseEntity.created(new URI("/api/rentals/" + rental.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, rental.getId().toString()))
-            .body(rental);
+
+        var created = rentalService.create(rental);
+        //TODO: change me to find RequestAgreement and redirect
+        return ResponseEntity.created(new URI("/api/rentals/" + created.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, created.getId().toString()))
+            .body(created);
     }
 
     /**
