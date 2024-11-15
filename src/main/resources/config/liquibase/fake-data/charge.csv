@@ -1,11 +1,4 @@
 id;tool_type;daily_charge;weekday_charge;weekend_charge;holiday_charge
-1;JACKHUMMER;751.72;true;true;true
-2;CHINSAW;633.88;true;true;false
-3;LADDER;832.4;true;true;false
-4;JACKHUMMER;848.81;false;true;false
-5;LADDER;494.16;true;true;true
-6;JACKHUMMER;79.77;true;false;false
-7;CHINSAW;472.33;false;true;false
-8;LADDER;665.82;true;true;false
-9;JACKHUMMER;512.43;true;true;true
-10;CHINSAW;293.19;true;true;true
+1;JACKHUMMER;2.99;true;false;false
+2;CHINSAW;1.49;true;false;true
+3;LADDER;1.99;true;true;false

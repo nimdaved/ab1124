@@ -39,6 +39,7 @@ public class Tool implements Serializable, Persistable<String> {
     private boolean isPersisted;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tool_inventory_id", referencedColumnName = "id")
     @JsonIgnoreProperties(value = { "tools" }, allowSetters = true)
     private ToolInventory toolInventory;
 

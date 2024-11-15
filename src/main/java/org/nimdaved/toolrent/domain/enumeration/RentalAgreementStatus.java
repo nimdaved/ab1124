@@ -6,5 +6,5 @@ package org.nimdaved.toolrent.domain.enumeration;
 public enum RentalAgreementStatus {
     PENDING,
     ACCEPTED,
-    REJEJECTED,
+    REJECTED,
 }

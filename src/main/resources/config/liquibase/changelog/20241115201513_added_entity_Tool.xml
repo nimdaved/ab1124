@@ -46,6 +46,7 @@
             <column name="code" type="string"/>
             <column name="tool_type" type="string"/>
             <column name="brand" type="string"/>
+            <column name="tool_inventory_id" type="bigint"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

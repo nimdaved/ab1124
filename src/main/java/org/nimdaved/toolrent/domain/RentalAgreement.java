@@ -33,7 +33,7 @@ public class RentalAgreement implements Serializable {
 
     @JsonIgnoreProperties(value = { "customer", "tool", "rentalAgreement" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(unique = true)
+    @JoinColumn(name = "rental_id", referencedColumnName = "id", unique = true)
     private Rental rental;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

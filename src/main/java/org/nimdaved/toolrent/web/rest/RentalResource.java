@@ -148,10 +148,6 @@ public class RentalResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
         @RequestParam(name = "filter", required = false) String filter
     ) {
-        if ("rentalagreement-is-null".equals(filter)) {
-            LOG.debug("REST request to get all Rentals where rentalAgreement is null");
-            return new ResponseEntity<>(rentalService.findAllWhereRentalAgreementIsNull(), HttpStatus.OK);
-        }
         LOG.debug("REST request to get a page of Rentals");
         Page<Rental> page = rentalService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);

@@ -56,15 +56,13 @@ public class Rental implements Serializable {
     private BigDecimal chargeAmount;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tool_code", referencedColumnName = "code")
     @JsonIgnoreProperties(value = { "toolInventory" }, allowSetters = true)
     private Tool tool;
-
-    @JsonIgnoreProperties(value = { "rental" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "rental")
-    private RentalAgreement rentalAgreement;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -169,25 +167,6 @@ public class Rental implements Serializable {
 
     public Rental tool(Tool tool) {
         this.setTool(tool);
-        return this;
-    }
-
-    public RentalAgreement getRentalAgreement() {
-        return this.rentalAgreement;
-    }
-
-    public void setRentalAgreement(RentalAgreement rentalAgreement) {
-        if (this.rentalAgreement != null) {
-            this.rentalAgreement.setRental(null);
-        }
-        if (rentalAgreement != null) {
-            rentalAgreement.setRental(this);
-        }
-        this.rentalAgreement = rentalAgreement;
-    }
-
-    public Rental rentalAgreement(RentalAgreement rentalAgreement) {
-        this.setRentalAgreement(rentalAgreement);
         return this;
     }
 

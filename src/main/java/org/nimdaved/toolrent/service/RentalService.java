@@ -95,18 +95,6 @@ public class RentalService {
     }
 
     /**
-     *  Get all the rentals where RentalAgreement is {@code null}.
-     *  @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public List<Rental> findAllWhereRentalAgreementIsNull() {
-        LOG.debug("Request to get all rentals where RentalAgreement is null");
-        return StreamSupport.stream(rentalRepository.findAll().spliterator(), false)
-            .filter(rental -> rental.getRentalAgreement() == null)
-            .toList();
-    }
-
-    /**
      * Get one rental by id.
      *
      * @param id the id of the entity.

@@ -18,22 +18,22 @@ application {
 
 
 enum ToolType {
-	LADDER(Ladder), 
-    CHINSAW(Chainsaw),
-    JACKHUMMER(Jackhummer)
+	LADDER(Ladder),
+  CHINSAW(Chainsaw),
+  JACKHUMMER(Jackhummer)
 }
 
 enum RentalStatus {
 	CREATED,
 	CHECKED_OUT,
-    CHECKED_IN,
-    CANCELLED
+  CHECKED_IN,
+  CANCELLED
 }
 
 enum RentalAgreementStatus {
 	PENDING,
-	ACCEPTED, 
-    REJEJECTED
+	ACCEPTED,
+  REJECTED
 }
 
 entity Tool {
@@ -43,8 +43,8 @@ entity Tool {
 
 }
 
-/** 
- * The concept of ToolInventory is not specified in the requirents. 
+/**
+ * The concept of ToolInventory is not specified in the requirents.
  * The entity created as an example of handling "unspoken" implicit
  * domain requirements
  */
@@ -83,8 +83,8 @@ entity RentalAgreement {
 
 }
 
-/** 
- * The concept of Customer is not specified in the requirents. 
+/**
+ * The concept of Customer is not specified in the requirents.
  * The entity created as an example of handling "unspoken" implicit
  * domain requirement
  */
@@ -98,12 +98,12 @@ entity Holiday {
 	name String required minlength(3) maxlength(128)
 	holidayType HolidayType required
     monthNumber Integer required min(1) max(12)
-/** 
+/**
  * Day of month (1..31) when holidayType is EXACT_DAY_OF_MONTH,
- * otherwise day of week (1..7). @see ISO-8601  
+ * otherwise day of week (1..7). @see ISO-8601
  */
     dayNumber Integer required min(1) max(31)
-    observedOnClosestWeekday Boolean required 
+    observedOnClosestWeekday Boolean required
 
 }
 
@@ -128,20 +128,20 @@ relationship ManyToOne {
 /** Set pagination options for some entities */
 paginate Rental, RentalAgreement with pagination
 
-/** 
+/**
  * Use Data Transfer Objects (DTO) for some domain entities to allow separate migration paths
- * for the API and domain entities 
+ * for the API and domain entities
  */
 /** dto Rental, RentalAgreement, Tool, ToolInventory, Customer with mapstruct */
 
 
 /**
- * Service options: 
- * "serviceClass " - Curent level of complexity does not warrant service interfaces 
+ * Service options:
+ * "serviceClass " - Curent level of complexity does not warrant service interfaces
  */
 service Rental, RentalAgreement, Charge, Tool with serviceClass
 
-/** do not generate UI code, TODO: uncomment line below when done with POC */
+/** do not generate UI code */
 skipClient all
 
 

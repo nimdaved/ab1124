@@ -1,11 +1,3 @@
 id;name;holiday_type;month_number;day_number;observed_on_closest_weekday
-1;handover interesting finally;FIRST_DAY_OF_WEEK_IN_MONTH;6;21;false
-2;what whenever brave;LAST_DAY_OF_WEEK_IN_MONTH;6;5;true
-3;mysterious shoulder;EXACT_DAY_OF_MONTH;11;2;true
-4;glossy numeracy what;LAST_DAY_OF_WEEK_IN_MONTH;1;22;false
-5;even fortunately;LAST_DAY_OF_WEEK_IN_MONTH;9;25;true
-6;gray;FIRST_DAY_OF_WEEK_IN_MONTH;1;18;true
-7;while dependency strict;FIRST_DAY_OF_WEEK_IN_MONTH;9;11;false
-8;misspend;EXACT_DAY_OF_MONTH;10;3;false
-9;gadzooks cuckoo valley;FIRST_DAY_OF_WEEK_IN_MONTH;8;22;false
-10;stealthily;FIRST_DAY_OF_WEEK_IN_MONTH;6;12;false
+1;Labor Day;FIRST_DAY_OF_WEEK_IN_MONTH;9;1;false
+2;Independence Day;EXACT_DAY_OF_MONTH;7;4;true

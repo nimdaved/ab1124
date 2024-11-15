@@ -48,18 +48,4 @@ class RentalTest {
         rental.tool(null);
         assertThat(rental.getTool()).isNull();
     }
-
-    @Test
-    void rentalAgreementTest() {
-        Rental rental = getRentalRandomSampleGenerator();
-        RentalAgreement rentalAgreementBack = getRentalAgreementRandomSampleGenerator();
-
-        rental.setRentalAgreement(rentalAgreementBack);
-        assertThat(rental.getRentalAgreement()).isEqualTo(rentalAgreementBack);
-        assertThat(rentalAgreementBack.getRental()).isEqualTo(rental);
-
-        rental.rentalAgreement(null);
-        assertThat(rental.getRentalAgreement()).isNull();
-        assertThat(rentalAgreementBack.getRental()).isNull();
-    }
 }
