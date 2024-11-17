@@ -1,9 +1,15 @@
 package org.nimdaved.toolrent.domain;
 
+import static java.time.temporal.TemporalAdjusters.*;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.Year;
+import java.util.Optional;
 import org.nimdaved.toolrent.domain.enumeration.HolidayType;
 
 /**
@@ -153,6 +159,26 @@ public class Holiday implements Serializable {
     public int hashCode() {
         // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
+    }
+
+    public LocalDate toLocalDate(int year) {
+        var date =
+            switch (holidayType) {
+                case EXACT_DAY_OF_MONTH -> LocalDate.of(year, monthNumber, dayNumber);
+                case FIRST_DAY_OF_WEEK_IN_MONTH -> LocalDate.of(year, getMonthNumber(), 1).with(
+                    dayOfWeekInMonth(1, DayOfWeek.of(getDayNumber()))
+                );
+            };
+
+        if (Optional.ofNullable(getObservedOnClosestWeekday()).filter(b -> b).isPresent()) {
+            if (date.getDayOfWeek() == DayOfWeek.SATURDAY) {
+                date = date.minusDays(1);
+            } else if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                date = date.plusDays(1);
+            }
+        }
+
+        return date;
     }
 
     // prettier-ignore

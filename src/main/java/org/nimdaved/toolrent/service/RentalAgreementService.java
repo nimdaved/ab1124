@@ -1,14 +1,20 @@
 package org.nimdaved.toolrent.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
+import java.util.function.Function;
 import org.nimdaved.toolrent.domain.RentalAgreement;
+import org.nimdaved.toolrent.domain.enumeration.RentalAgreementStatus;
 import org.nimdaved.toolrent.repository.RentalAgreementRepository;
+import org.nimdaved.toolrent.service.dto.ToolRentalEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 /**
  * Service Implementation for managing {@link org.nimdaved.toolrent.domain.RentalAgreement}.
@@ -20,9 +26,18 @@ public class RentalAgreementService {
     private static final Logger LOG = LoggerFactory.getLogger(RentalAgreementService.class);
 
     private final RentalAgreementRepository rentalAgreementRepository;
+    private final DocumentGeneratorService documentGeneratorService;
 
-    public RentalAgreementService(RentalAgreementRepository rentalAgreementRepository) {
+    private final ApplicationEventPublisher eventPublisher;
+
+    public RentalAgreementService(
+        RentalAgreementRepository rentalAgreementRepository,
+        DocumentGeneratorService documentGeneratorService,
+        ApplicationEventPublisher eventPublisher
+    ) {
         this.rentalAgreementRepository = rentalAgreementRepository;
+        this.documentGeneratorService = documentGeneratorService;
+        this.eventPublisher = eventPublisher;
     }
 
     /**
@@ -34,41 +49,6 @@ public class RentalAgreementService {
     public RentalAgreement save(RentalAgreement rentalAgreement) {
         LOG.debug("Request to save RentalAgreement : {}", rentalAgreement);
         return rentalAgreementRepository.save(rentalAgreement);
-    }
-
-    /**
-     * Update a rentalAgreement.
-     *
-     * @param rentalAgreement the entity to save.
-     * @return the persisted entity.
-     */
-    public RentalAgreement update(RentalAgreement rentalAgreement) {
-        LOG.debug("Request to update RentalAgreement : {}", rentalAgreement);
-        return rentalAgreementRepository.save(rentalAgreement);
-    }
-
-    /**
-     * Partially update a rentalAgreement.
-     *
-     * @param rentalAgreement the entity to update partially.
-     * @return the persisted entity.
-     */
-    public Optional<RentalAgreement> partialUpdate(RentalAgreement rentalAgreement) {
-        LOG.debug("Request to partially update RentalAgreement : {}", rentalAgreement);
-
-        return rentalAgreementRepository
-            .findById(rentalAgreement.getId())
-            .map(existingRentalAgreement -> {
-                if (rentalAgreement.getAgreement() != null) {
-                    existingRentalAgreement.setAgreement(rentalAgreement.getAgreement());
-                }
-                if (rentalAgreement.getStatus() != null) {
-                    existingRentalAgreement.setStatus(rentalAgreement.getStatus());
-                }
-
-                return existingRentalAgreement;
-            })
-            .map(rentalAgreementRepository::save);
     }
 
     /**
@@ -103,5 +83,54 @@ public class RentalAgreementService {
     public void delete(Long id) {
         LOG.debug("Request to delete RentalAgreement : {}", id);
         rentalAgreementRepository.deleteById(id);
+    }
+
+    /**
+     * Accept rental agreement and notify downstream services
+     *
+     * @param rentalAgreementId
+     */
+    public void accept(Long rentalAgreementId) {
+        changeStatus(rentalAgreementId, RentalAgreementStatus.ACCEPTED, ToolRentalEvents.RentalAgreementAccepted::new);
+    }
+
+    /**
+     * Reject rental agreement and notify downstream services
+     *
+     * @param rentalAgreementId
+     */
+    public void reject(Long rentalAgreementId) {
+        changeStatus(rentalAgreementId, RentalAgreementStatus.REJECTED, ToolRentalEvents.RentalAgreementRejected::new);
+    }
+
+    private <R> void changeStatus(Long rentalAgreementId, RentalAgreementStatus status, Function<RentalAgreement, R> function) {
+        findOne(rentalAgreementId).ifPresentOrElse(
+            rentalAgreement -> {
+                rentalAgreement.setStatus(status);
+                var saved = save(rentalAgreement);
+                rentalAgreement.getRental();
+                eventPublisher.publishEvent(function.apply(saved));
+            },
+            () -> {
+                throw new EntityNotFoundException("Could not find RentalAgreement with id " + rentalAgreementId);
+            }
+        );
+    }
+
+    /**
+     * Processes ToolRentalEvents.RentalCreated event
+     *
+     * @param event
+     */
+    @TransactionalEventListener
+    @Transactional
+    public void onEvent(ToolRentalEvents.RentalCreated event) {
+        LOG.debug("Received event : {}", event);
+
+        RentalAgreement rentalAgreement = new RentalAgreement()
+            .rental(event.rental())
+            .agreement(documentGeneratorService.createRentalAgreement(event.rental()));
+
+        save(rentalAgreement);
     }
 }

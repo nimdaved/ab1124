@@ -29,7 +29,7 @@ public class RentalAgreement implements Serializable {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private RentalAgreementStatus status;
+    private RentalAgreementStatus status = RentalAgreementStatus.PENDING;
 
     @JsonIgnoreProperties(value = { "customer", "tool", "rentalAgreement" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)

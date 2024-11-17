@@ -1,5 +1,6 @@
 package org.nimdaved.toolrent.repository;
 
+import java.util.function.Supplier;
 import org.nimdaved.toolrent.domain.Customer;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
@@ -9,4 +10,7 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface CustomerRepository extends JpaRepository<Customer, Long> {}
+public interface CustomerRepository extends JpaRepository<Customer, Long> {
+    @Query("select c from Customer c where c.email ='anonymous@toolrent.com'")
+    Customer findDefaultCustomer();
+}

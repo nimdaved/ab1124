@@ -1,13 +1,22 @@
 package org.nimdaved.toolrent.service;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
+import java.util.function.Function;
+import org.nimdaved.toolrent.domain.Customer;
 import org.nimdaved.toolrent.domain.Rental;
+import org.nimdaved.toolrent.domain.Tool;
+import org.nimdaved.toolrent.domain.enumeration.RentalStatus;
+import org.nimdaved.toolrent.repository.CustomerRepository;
 import org.nimdaved.toolrent.repository.RentalRepository;
 import org.nimdaved.toolrent.service.dto.RentalRequest;
+import org.nimdaved.toolrent.service.dto.ToolRentalEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,13 +32,87 @@ public class RentalService {
     private static final Logger LOG = LoggerFactory.getLogger(RentalService.class);
 
     private final RentalRepository rentalRepository;
+    private final ToolService toolService;
+    private final ChargeService chargeService;
+    private final CustomerRepository customerRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public RentalService(RentalRepository rentalRepository) {
+    public RentalService(
+        RentalRepository rentalRepository,
+        ToolService toolService,
+        ChargeService chargeService,
+        CustomerRepository customerRepository,
+        ApplicationEventPublisher eventPublisher
+    ) {
         this.rentalRepository = rentalRepository;
+        this.toolService = toolService;
+        this.chargeService = chargeService;
+        this.customerRepository = customerRepository;
+        this.eventPublisher = eventPublisher;
     }
 
-    public Rental create(RentalRequest rental) {
-        return null;
+    public Rental create(RentalRequest rentalRequest) {
+        var rental = new Rental();
+        rental.setDiscountPercent(rentalRequest.getDiscountPercent());
+        rental.setCheckOutDate(rentalRequest.getCheckOutDate());
+        rental.setDayCount(rentalRequest.getDayCount());
+
+        rental.setCustomer(findCustomer(Optional.ofNullable(rentalRequest.getCustomer())));
+        rental.setTool(getAvailableTool(rentalRequest.getToolCode()));
+        var charges = calculateCharges(rental.getTool(), rental.getCheckOutDate(), rental.getDayCount());
+        rental.setChargeAmount(charges.chargedAmount());
+
+        var saved = rentalRepository.save(rental);
+        saved.setChargedDaysCount(charges.chargedDays());
+        saved.setDailyCharges(charges.dailyCharges());
+
+        eventPublisher.publishEvent(new ToolRentalEvents.RentalCreated(saved));
+
+        return saved;
+    }
+
+    public Rental checkout(Rental rental) {
+        return changeStatus(rental, RentalStatus.CHECKED_OUT, ToolRentalEvents.RentalCheckedOut::new);
+    }
+
+    public Rental checkin(Rental rental) {
+        return changeStatus(rental, RentalStatus.CHECKED_IN, ToolRentalEvents.RentalCheckedIn::new);
+    }
+
+    public Rental cancel(Rental rental) {
+        return changeStatus(rental, RentalStatus.CANCELLED, ToolRentalEvents.RentalCanceled::new);
+    }
+
+    @EventListener
+    @Transactional
+    public void onEvent(ToolRentalEvents.RentalAgreementAccepted event) {
+        checkout(event.rentalAgreement().getRental());
+    }
+
+    @EventListener
+    @Transactional
+    public void onEvent(ToolRentalEvents.RentalAgreementRejected event) {
+        cancel(event.rentalAgreement().getRental());
+    }
+
+    private <T> Rental changeStatus(Rental rental, RentalStatus status, Function<Rental, T> function) {
+        rental.setStatus(status);
+        var saved = rentalRepository.save(rental);
+        eventPublisher.publishEvent(function.apply(saved));
+
+        return saved;
+    }
+
+    private Customer findCustomer(Optional<Customer> customer) {
+        return customer.flatMap(c -> customerRepository.findOne(Example.of(c))).orElseGet(() -> customerRepository.findDefaultCustomer());
+    }
+
+    private ChargeService.Charges calculateCharges(Tool tool, LocalDate checkOutDate, Integer dayCount) {
+        return chargeService.calculateCharges(tool, checkOutDate, dayCount);
+    }
+
+    private Tool getAvailableTool(String toolCode) {
+        return toolService.getAvailableTool(toolCode);
     }
 
     /**
@@ -38,9 +121,10 @@ public class RentalService {
      * @param rental the entity to save.
      * @return the persisted entity.
      */
-    public Rental save(Rental rental) {
+    private Rental save(Rental rental) {
         LOG.debug("Request to save Rental : {}", rental);
-        return rentalRepository.save(rental);
+        var saved = rentalRepository.save(rental);
+        return saved;
     }
 
     /**

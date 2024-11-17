@@ -103,4 +103,9 @@ public class ToolService {
         LOG.debug("Request to delete Tool : {}", id);
         toolRepository.deleteById(id);
     }
+
+    public Tool getAvailableTool(String toolCode) {
+        //TODO: implement me
+        return null;
+    }
 }

@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Optional;
 import org.nimdaved.toolrent.domain.enumeration.RentalStatus;
 
 /**
@@ -63,6 +65,26 @@ public class Rental implements Serializable {
     @JoinColumn(name = "tool_code", referencedColumnName = "code")
     @JsonIgnoreProperties(value = { "toolInventory" }, allowSetters = true)
     private Tool tool;
+
+    //TODO: add next to fields to the entity model
+    transient int chargedDaysCount;
+    transient BigDecimal dailyCharges;
+
+    public int getChargedDaysCount() {
+        return chargedDaysCount;
+    }
+
+    public void setChargedDaysCount(int chargedDaysCount) {
+        this.chargedDaysCount = chargedDaysCount;
+    }
+
+    public BigDecimal getDailyCharges() {
+        return dailyCharges;
+    }
+
+    public void setDailyCharges(BigDecimal dailyCharges) {
+        this.dailyCharges = dailyCharges;
+    }
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -187,6 +209,16 @@ public class Rental implements Serializable {
     public int hashCode() {
         // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
+    }
+
+    public BigDecimal getDiscountAmount() {
+        return Optional.ofNullable(getChargeAmount())
+            .map(a -> a.multiply(BigDecimal.valueOf(discountPercent)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP))
+            .orElseGet(() -> new BigDecimal("0.00"));
+    }
+
+    public BigDecimal getFinalCharge() {
+        return getChargeAmount().subtract(getDiscountAmount());
     }
 
     // prettier-ignore
