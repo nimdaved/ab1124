@@ -1,6 +1,5 @@
 package org.nimdaved.toolrent.service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.function.Function;
@@ -51,6 +50,11 @@ public class RentalService {
         this.eventPublisher = eventPublisher;
     }
 
+    /**
+     * Create rental
+     * @param rentalRequest
+     * @return
+     */
     public Rental create(RentalRequest rentalRequest) {
         var rental = new Rental();
         rental.setDiscountPercent(rentalRequest.getDiscountPercent());
@@ -61,8 +65,9 @@ public class RentalService {
         rental.setTool(getAvailableTool(rentalRequest.getToolCode()));
         var charges = calculateCharges(rental.getTool(), rental.getCheckOutDate(), rental.getDayCount());
         rental.setChargeAmount(charges.chargedAmount());
+        rental.setStatus(RentalStatus.CREATED);
 
-        var saved = rentalRepository.save(rental);
+        var saved = save(rental);
         saved.setChargedDaysCount(charges.chargedDays());
         saved.setDailyCharges(charges.dailyCharges());
 
@@ -97,7 +102,7 @@ public class RentalService {
 
     private <T> Rental changeStatus(Rental rental, RentalStatus status, Function<Rental, T> function) {
         rental.setStatus(status);
-        var saved = rentalRepository.save(rental);
+        var saved = save(rental);
         eventPublisher.publishEvent(function.apply(saved));
 
         return saved;
@@ -125,50 +130,6 @@ public class RentalService {
         LOG.debug("Request to save Rental : {}", rental);
         var saved = rentalRepository.save(rental);
         return saved;
-    }
-
-    /**
-     * Update a rental.
-     *
-     * @param rental the entity to save.
-     * @return the persisted entity.
-     */
-    public Rental update(Rental rental) {
-        LOG.debug("Request to update Rental : {}", rental);
-        return rentalRepository.save(rental);
-    }
-
-    /**
-     * Partially update a rental.
-     *
-     * @param rental the entity to update partially.
-     * @return the persisted entity.
-     */
-    public Optional<Rental> partialUpdate(Rental rental) {
-        LOG.debug("Request to partially update Rental : {}", rental);
-
-        return rentalRepository
-            .findById(rental.getId())
-            .map(existingRental -> {
-                if (rental.getCheckOutDate() != null) {
-                    existingRental.setCheckOutDate(rental.getCheckOutDate());
-                }
-                if (rental.getDayCount() != null) {
-                    existingRental.setDayCount(rental.getDayCount());
-                }
-                if (rental.getDiscountPercent() != null) {
-                    existingRental.setDiscountPercent(rental.getDiscountPercent());
-                }
-                if (rental.getStatus() != null) {
-                    existingRental.setStatus(rental.getStatus());
-                }
-                if (rental.getChargeAmount() != null) {
-                    existingRental.setChargeAmount(rental.getChargeAmount());
-                }
-
-                return existingRental;
-            })
-            .map(rentalRepository::save);
     }
 
     /**

@@ -53,87 +53,17 @@ public class RentalResource {
      * {@code POST  /rentals} : Create a new rental.
      *
      * @param rental the rental to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new rental, or with status {@code 400 (Bad Request)} if the rental has already an ID.
+     * @return the {@link ResponseEntity} redirecting , or with status {@code 400 (Bad Request)} if the rental has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
-    public ResponseEntity<Rental> createRental(@Valid @RequestBody RentalRequest rental) throws URISyntaxException {
+    public ResponseEntity<?> createRental(@Valid @RequestBody RentalRequest rental) throws URISyntaxException {
         LOG.debug("REST request to save Rental : {}", rental);
 
         var created = rentalService.create(rental);
-        //TODO: change me to find RequestAgreement and redirect
-        return ResponseEntity.created(new URI("/api/rentals/" + created.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, created.getId().toString()))
-            .body(created);
-    }
-
-    /**
-     * {@code PUT  /rentals/:id} : Updates an existing rental.
-     *
-     * @param id the id of the rental to save.
-     * @param rental the rental to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated rental,
-     * or with status {@code 400 (Bad Request)} if the rental is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the rental couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<Rental> updateRental(
-        @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody Rental rental
-    ) throws URISyntaxException {
-        LOG.debug("REST request to update Rental : {}, {}", id, rental);
-        if (rental.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, rental.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!rentalRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        rental = rentalService.update(rental);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, rental.getId().toString()))
-            .body(rental);
-    }
-
-    /**
-     * {@code PATCH  /rentals/:id} : Partial updates given fields of an existing rental, field will ignore if it is null
-     *
-     * @param id the id of the rental to save.
-     * @param rental the rental to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated rental,
-     * or with status {@code 400 (Bad Request)} if the rental is not valid,
-     * or with status {@code 404 (Not Found)} if the rental is not found,
-     * or with status {@code 500 (Internal Server Error)} if the rental couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<Rental> partialUpdateRental(
-        @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody Rental rental
-    ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Rental partially : {}, {}", id, rental);
-        if (rental.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, rental.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!rentalRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<Rental> result = rentalService.partialUpdate(rental);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, rental.getId().toString())
-        );
+        //Redirect to the rental agreement page to allow for acceptance
+        URI location = URI.create("/api/rental-agreements/rental/" + created.getId());
+        return ResponseEntity.status(HttpStatus.SEE_OTHER).location(location).build();
     }
 
     /**

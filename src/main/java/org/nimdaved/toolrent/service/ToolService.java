@@ -3,11 +3,16 @@ package org.nimdaved.toolrent.service;
 import java.util.List;
 import java.util.Optional;
 import org.nimdaved.toolrent.domain.Tool;
+import org.nimdaved.toolrent.repository.ToolInventoryRepository;
 import org.nimdaved.toolrent.repository.ToolRepository;
+import org.nimdaved.toolrent.service.dto.ToolRentalEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Service Implementation for managing {@link org.nimdaved.toolrent.domain.Tool}.
@@ -19,9 +24,11 @@ public class ToolService {
     private static final Logger LOG = LoggerFactory.getLogger(ToolService.class);
 
     private final ToolRepository toolRepository;
+    private final ToolInventoryRepository toolInventoryRepository;
 
-    public ToolService(ToolRepository toolRepository) {
+    public ToolService(ToolRepository toolRepository, ToolInventoryRepository toolInventoryRepository) {
         this.toolRepository = toolRepository;
+        this.toolInventoryRepository = toolInventoryRepository;
     }
 
     /**
@@ -105,7 +112,46 @@ public class ToolService {
     }
 
     public Tool getAvailableTool(String toolCode) {
-        //TODO: implement me
-        return null;
+        return toolRepository
+            .findByToolCodeWithStockCountInInventory(toolCode)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not find available tool with code: " + toolCode));
+    }
+
+    @EventListener
+    @Transactional
+    public void onRentalCreated(ToolRentalEvents.RentalCreated event) {
+        var inventory = event.rental().getTool().getToolInventory();
+        var onHold = inventory.getOnHoldCount() + 1;
+        inventory.setOnHoldCount(onHold);
+        toolInventoryRepository.save(inventory);
+    }
+
+    @EventListener
+    @Transactional
+    public void onRentalCanceled(ToolRentalEvents.RentalCanceled event) {
+        var inventory = event.rental().getTool().getToolInventory();
+        var onHold = inventory.getOnHoldCount() - 1;
+        inventory.setOnHoldCount(onHold);
+        toolInventoryRepository.save(inventory);
+    }
+
+    @EventListener
+    @Transactional
+    public void onRentalCheckedOut(ToolRentalEvents.RentalCheckedOut event) {
+        var inventory = event.rental().getTool().getToolInventory();
+        var onHold = inventory.getOnHoldCount() - 1;
+        var checkedOut = inventory.getCheckedOutCount() + 1;
+        inventory.setOnHoldCount(onHold);
+        inventory.setCheckedOutCount(checkedOut);
+        toolInventoryRepository.save(inventory);
+    }
+
+    @EventListener
+    @Transactional
+    public void onRentalCheckedIn(ToolRentalEvents.RentalCheckedIn event) {
+        var inventory = event.rental().getTool().getToolInventory();
+        var checkedOut = inventory.getCheckedOutCount() - 1;
+        inventory.setCheckedOutCount(checkedOut);
+        toolInventoryRepository.save(inventory);
     }
 }

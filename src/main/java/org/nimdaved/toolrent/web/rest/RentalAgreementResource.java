@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.nimdaved.toolrent.domain.RentalAgreement;
@@ -68,72 +69,31 @@ public class RentalAgreementResource {
     }
 
     /**
-     * {@code PUT  /rental-agreements/:id} : Updates an existing rentalAgreement.
-     *
-     * @param id the id of the rentalAgreement to save.
-     * @param rentalAgreement the rentalAgreement to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated rentalAgreement,
-     * or with status {@code 400 (Bad Request)} if the rentalAgreement is not valid,
+     * Accept rental agreement by customer
+     * @param id
+     * @return the {@link ResponseEntity} with status {@code 202 (Accepted)},
+     * or with status {@code 400 (Bad Request)} if the rentalAgreement is already accepted,
      * or with status {@code 500 (Internal Server Error)} if the rentalAgreement couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<RentalAgreement> updateRentalAgreement(
-        @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody RentalAgreement rentalAgreement
-    ) throws URISyntaxException {
-        LOG.debug("REST request to update RentalAgreement : {}, {}", id, rentalAgreement);
-        if (rentalAgreement.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, rentalAgreement.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!rentalAgreementRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        rentalAgreement = rentalAgreementService.update(rentalAgreement);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, rentalAgreement.getId().toString()))
-            .body(rentalAgreement);
+    @PostMapping("/{id}/accept")
+    public ResponseEntity<?> accept(@PathVariable(value = "id") final Long id) {
+        LOG.debug("REST request to accept RentalAgreement : {}", id);
+        rentalAgreementService.accept(id);
+        return ResponseEntity.accepted().body(Map.of(id, "RentalAgreement accepted"));
     }
 
     /**
-     * {@code PATCH  /rental-agreements/:id} : Partial updates given fields of an existing rentalAgreement, field will ignore if it is null
-     *
-     * @param id the id of the rentalAgreement to save.
-     * @param rentalAgreement the rentalAgreement to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated rentalAgreement,
-     * or with status {@code 400 (Bad Request)} if the rentalAgreement is not valid,
-     * or with status {@code 404 (Not Found)} if the rentalAgreement is not found,
+     * Reject rental agreement by customer
+     * @param id
+     * @return the {@link ResponseEntity} with status {@code 202 (Accepted)},
+     * or with status {@code 400 (Bad Request)} if the rentalAgreement is already rejected,
      * or with status {@code 500 (Internal Server Error)} if the rentalAgreement couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<RentalAgreement> partialUpdateRentalAgreement(
-        @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody RentalAgreement rentalAgreement
-    ) throws URISyntaxException {
-        LOG.debug("REST request to partial update RentalAgreement partially : {}, {}", id, rentalAgreement);
-        if (rentalAgreement.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, rentalAgreement.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!rentalAgreementRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<RentalAgreement> result = rentalAgreementService.partialUpdate(rentalAgreement);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, rentalAgreement.getId().toString())
-        );
+    @PostMapping("/{id}/reject")
+    public ResponseEntity<?> reject(@PathVariable(value = "id") final Long id) {
+        LOG.debug("REST request to reject RentalAgreement : {}", id);
+        rentalAgreementService.reject(id);
+        return ResponseEntity.accepted().body(Map.of(id, "RentalAgreement rejected"));
     }
 
     /**
@@ -160,6 +120,19 @@ public class RentalAgreementResource {
     public ResponseEntity<RentalAgreement> getRentalAgreement(@PathVariable("id") Long id) {
         LOG.debug("REST request to get RentalAgreement : {}", id);
         Optional<RentalAgreement> rentalAgreement = rentalAgreementService.findOne(id);
+        return ResponseUtil.wrapOrNotFound(rentalAgreement);
+    }
+
+    /**
+     * {@code GET  /rental-agreements/rental/:id} : get the "id" rentalAgreement.
+     *
+     * @param id the id of the rentalAgreement to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the rentalAgreement, or with status {@code 404 (Not Found)}.
+     */
+    @GetMapping("/rental/{id}")
+    public ResponseEntity<RentalAgreement> getRentalAgreementByRentalId(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get RentalAgreement by rentalId : {}", id);
+        Optional<RentalAgreement> rentalAgreement = rentalAgreementRepository.findByRentalId(id);
         return ResponseUtil.wrapOrNotFound(rentalAgreement);
     }
 

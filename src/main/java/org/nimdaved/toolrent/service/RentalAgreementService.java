@@ -1,6 +1,5 @@
 package org.nimdaved.toolrent.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import java.util.function.Function;
 import org.nimdaved.toolrent.domain.RentalAgreement;
@@ -12,9 +11,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Service Implementation for managing {@link org.nimdaved.toolrent.domain.RentalAgreement}.
@@ -91,7 +93,12 @@ public class RentalAgreementService {
      * @param rentalAgreementId
      */
     public void accept(Long rentalAgreementId) {
-        changeStatus(rentalAgreementId, RentalAgreementStatus.ACCEPTED, ToolRentalEvents.RentalAgreementAccepted::new);
+        changeStatus(
+            rentalAgreementId,
+            RentalAgreementStatus.PENDING,
+            RentalAgreementStatus.ACCEPTED,
+            ToolRentalEvents.RentalAgreementAccepted::new
+        );
     }
 
     /**
@@ -100,21 +107,36 @@ public class RentalAgreementService {
      * @param rentalAgreementId
      */
     public void reject(Long rentalAgreementId) {
-        changeStatus(rentalAgreementId, RentalAgreementStatus.REJECTED, ToolRentalEvents.RentalAgreementRejected::new);
+        changeStatus(
+            rentalAgreementId,
+            RentalAgreementStatus.PENDING,
+            RentalAgreementStatus.REJECTED,
+            ToolRentalEvents.RentalAgreementRejected::new
+        );
     }
 
-    private <R> void changeStatus(Long rentalAgreementId, RentalAgreementStatus status, Function<RentalAgreement, R> function) {
-        findOne(rentalAgreementId).ifPresentOrElse(
-            rentalAgreement -> {
-                rentalAgreement.setStatus(status);
-                var saved = save(rentalAgreement);
-                rentalAgreement.getRental();
-                eventPublisher.publishEvent(function.apply(saved));
-            },
-            () -> {
-                throw new EntityNotFoundException("Could not find RentalAgreement with id " + rentalAgreementId);
-            }
-        );
+    private <R> void changeStatus(
+        Long rentalAgreementId,
+        RentalAgreementStatus sourceStatus,
+        RentalAgreementStatus targetStatus,
+        Function<RentalAgreement, R> function
+    ) {
+        findOne(rentalAgreementId)
+            .filter(ra -> sourceStatus == ra.getStatus())
+            .ifPresentOrElse(
+                rentalAgreement -> {
+                    rentalAgreement.setStatus(targetStatus);
+                    var saved = save(rentalAgreement);
+                    rentalAgreement.getRental();
+                    eventPublisher.publishEvent(function.apply(saved));
+                },
+                () -> {
+                    throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        String.format("Could not find RentalAgreement with id: %s and status: %s.", rentalAgreementId, sourceStatus)
+                    );
+                }
+            );
     }
 
     /**
@@ -123,13 +145,15 @@ public class RentalAgreementService {
      * @param event
      */
     @TransactionalEventListener
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void onEvent(ToolRentalEvents.RentalCreated event) {
         LOG.debug("Received event : {}", event);
 
         RentalAgreement rentalAgreement = new RentalAgreement()
             .rental(event.rental())
-            .agreement(documentGeneratorService.createRentalAgreement(event.rental()));
+            .agreement(documentGeneratorService.createRentalAgreement(event.rental()))
+            //PENDING until accepted by customer
+            .status(RentalAgreementStatus.PENDING);
 
         save(rentalAgreement);
     }

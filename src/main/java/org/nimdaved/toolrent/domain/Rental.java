@@ -213,7 +213,7 @@ public class Rental implements Serializable {
 
     public BigDecimal getDiscountAmount() {
         return Optional.ofNullable(getChargeAmount())
-            .map(a -> a.multiply(BigDecimal.valueOf(discountPercent)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP))
+            .map(a -> a.multiply(BigDecimal.valueOf(discountPercent)).divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_UP))
             .orElseGet(() -> new BigDecimal("0.00"));
     }
 

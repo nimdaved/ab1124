@@ -1,6 +1,65 @@
 # toolrent
 
+This application calculates tool rental charges and produces tool rental agreement.
+API is exposed as REST web services
+
+## Design documentation
+
+Abailable at: TBD
+Domain entities are described in the [toolrent-with-ui.jdl](./toolrent-with-ui.jdl)
+The file is opened with text editor or with [JDL Studio](https://www.jhipster.tech/jdl-studio/)
+
+## To (build and) run locally
+
+`./gradlew`
+
+## Swagger API documentation
+
+Available at http://localhost:8080/admin/docs
+It is possible to exercise all APIs from there
+
+## Access control
+
+Access to above url will redirect to the login page
+
+Development environment credentials:
+`User:` admin
+`Password`: admin
+
+Access control to the REST API is relaxed for the http://localhost:8080/api/_._ endpoints and secured with
+user/user or admin/admin for other endpoints in the local environment
+
+## To create rental
+
+Example:
+
+```
+curl -X 'POST' \
+'http://localhost:8080/api/rentals' \
+-H 'accept: */*' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTczMTk1NTM5NywiYXV0aCI6IlJPTEVfQURNSU4gUk9MRV9VU0VSIiwiaWF0IjoxNzMxODY4OTk3fQ.wSNAb-cAjPQa_K2Kvqy0wMw4cM69gBcrZZqyNlUKR9W1OLXgHkchXylFWpIrRWrqiv_SR8cY_peSBpr19LnoXw' \
+-d '{
+"toolCode": "JAKD",
+"checkOutDate": "2024-11-17",
+"dayCount": 34,
+"discountPercent": 6
+}'
+```
+
+The response will redirect to the page with the new rental agreement.
+
+# TL, DR:
+
 This application was generated using JHipster 8.7.3, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.7.3](https://www.jhipster.tech/documentation-archive/v8.7.3).
+
+All non-Java files could be safely deleted when development is finalized.
+
+If you want to generate full UI (requires installed Node.js and JHipster ),
+delete the last line in the [toolrent-with-ui.jdl](./toolrent-with-ui.jdl)
+
+Then run
+`jhipster -jdl toolrent-with-ui.jdl`
 
 ## Project Structure
 

@@ -13,9 +13,10 @@ public class DocumentGeneratorService {
      * @param rental
      * @return
      */
-    @Transactional
     public String createRentalAgreement(Rental rental) {
-        StringBuilder result = new StringBuilder("Rental Agreement\n\n ")
+        StringBuilder result = new StringBuilder("Rental Agreement:\n\n ")
+            .append(rental.getCustomer())
+            .append("\n")
             .append("Tool code: ")
             .append(rental.getTool().getCode())
             .append("\n")
