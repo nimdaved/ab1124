@@ -1,13 +1,23 @@
 # toolrent
 
 This application calculates tool rental charges and produces tool rental agreement.
-API is exposed as REST web services
+API is exposed as REST endpoints
 
-## Design documentation
+# TODO:
 
-Abailable at: TBD
-Domain entities are described in the [toolrent-with-ui.jdl](./toolrent-with-ui.jdl)
-The file is opened with text editor or with [JDL Studio](https://www.jhipster.tech/jdl-studio/)
+- Fix integration tests: clamp data constraints, remove tests for removed endpoints
+- Add new tests
+- Add `lastModifiedAt` to Rental and RentalAgreement
+- Schedule rejection of stale pending agreements
+- Schedule cancellation of stale created rentals
+- Expose findAvailableTool by tool code and by tool type as REST API
+- Tighten access control for non-dev environment
+- Write design document
+
+## Documentation
+
+- High level design is available at [Tool Rental Service Design](https://docs.google.com/document/d/1TXJmCq3-lEbREPQ9oIFfGOLJezcnrbKbFCS1ZZkMKKQ)
+- Domain entities are described in the [toolrent-with-ui.jdl](./toolrent-with-ui.jdl). This file could be opened with text editor or with [JDL Studio](https://www.jhipster.tech/jdl-studio/)
 
 ## To (build and) run locally
 
@@ -15,19 +25,23 @@ The file is opened with text editor or with [JDL Studio](https://www.jhipster.te
 
 ## Swagger API documentation
 
-Available at http://localhost:8080/admin/docs
+Available at http://localhost:8080/admin/docs after application start with `admin credeentials`. (@see Access control section below)
 It is possible to exercise all APIs from there
 
 ## Access control
 
-Access to above url will redirect to the login page
+Access to the above url will redirect to the login page
 
-Development environment credentials:
+### Development environment credentials:
+
 `User:` admin
 `Password`: admin
 
-Access control to the REST API is relaxed for the http://localhost:8080/api/_._ endpoints and secured with
-user/user or admin/admin for other endpoints in the local environment
+- Access control to the REST API is relaxed for the http://localhost:8080/api/ endpoints (and secured for other endpoints) in the development(local) environment.
+- Most endpoints (besides `/management/health`, etc.) are secured with the JWT access tokens in all other environments
+- User management is handled by the [UserResource](./src/main/java/org/nimdaved/toolrent/web/rest/UserResource.java)
+- Account management is handled by the [AccountResource](./src/main/java/org/nimdaved/toolrent/web/rest/AccountResource.java)
+- Login is handled by the [AuthenticateController](./src/main/java/org/nimdaved/toolrent/web/rest/AuthenticateController.java)
 
 ## To create rental
 
@@ -47,15 +61,15 @@ curl -X 'POST' \
 }'
 ```
 
-The response will redirect to the page with the new rental agreement.
+This will create rental and rental agreement entities, then `redirect` to the newly created rental agreement.
 
-# TL, DR:
+# TL,DR
 
 This application was generated using JHipster 8.7.3, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.7.3](https://www.jhipster.tech/documentation-archive/v8.7.3).
 
 All non-Java files could be safely deleted when development is finalized.
 
-If you want to generate full UI (requires installed Node.js and JHipster ),
+If you want to generate full UI (requires installation of Node.js and JHipster),
 delete the last line in the [toolrent-with-ui.jdl](./toolrent-with-ui.jdl)
 
 Then run
