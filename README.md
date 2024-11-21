@@ -18,6 +18,7 @@ API is exposed as REST endpoints
 
 - High level design is available at [Tool Rental Service Design](https://docs.google.com/document/d/1TXJmCq3-lEbREPQ9oIFfGOLJezcnrbKbFCS1ZZkMKKQ)
 - Domain entities are described in the [toolrent-with-ui.jdl](./toolrent-with-ui.jdl). This file could be opened with text editor or with [JDL Studio](https://www.jhipster.tech/jdl-studio/)
+- [Class diagram](./uml-high-level.png)
 
 ## To (build and) run locally
 
