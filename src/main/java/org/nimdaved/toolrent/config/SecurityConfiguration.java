@@ -3,6 +3,7 @@ package org.nimdaved.toolrent.config;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
+import java.util.stream.Stream;
 import org.nimdaved.toolrent.security.*;
 import org.nimdaved.toolrent.web.filter.SpaWebFilter;
 import org.springframework.context.annotation.Bean;

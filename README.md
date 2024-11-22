@@ -3,16 +3,13 @@
 This application calculates tool rental charges and produces tool rental agreement.
 API is exposed as REST endpoints
 
-# TODO:
+# TODO for development team:
 
-- Fix integration tests: clamp data constraints, remove tests for removed endpoints
 - Add new tests
 - Add `lastModifiedAt` to Rental and RentalAgreement
 - Schedule rejection of stale pending agreements
 - Schedule cancellation of stale created rentals
 - Expose findAvailableTool by tool code and by tool type as REST API
-- Tighten access control for non-dev environment
-- Write design document
 
 ## Documentation
 

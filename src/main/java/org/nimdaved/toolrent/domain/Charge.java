@@ -39,19 +39,19 @@ public class Charge implements Serializable {
     @DecimalMin(value = "0")
     @DecimalMax(value = "1000")
     @Column(name = "daily_charge", precision = 21, scale = 2, nullable = false)
-    private BigDecimal dailyCharge;
+    private BigDecimal dailyCharge = BigDecimal.ZERO.setScale(2);
 
     @NotNull
     @Column(name = "weekday_charge", nullable = false)
-    private Boolean weekdayCharge;
+    private Boolean weekdayCharge = true;
 
     @NotNull
     @Column(name = "weekend_charge", nullable = false)
-    private Boolean weekendCharge;
+    private Boolean weekendCharge = false;
 
     @NotNull
     @Column(name = "holiday_charge", nullable = false)
-    private Boolean holidayCharge;
+    private Boolean holidayCharge = false;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 

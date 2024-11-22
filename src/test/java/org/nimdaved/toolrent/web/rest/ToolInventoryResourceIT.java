@@ -35,7 +35,7 @@ class ToolInventoryResourceIT {
     private static final String DEFAULT_LOCATION = "AAAAAAAAAA";
     private static final String UPDATED_LOCATION = "BBBBBBBBBB";
 
-    private static final Integer DEFAULT_STOCK_COUNT = 0;
+    private static final Integer DEFAULT_STOCK_COUNT = 30;
     private static final Integer UPDATED_STOCK_COUNT = 1;
 
     private static final Integer DEFAULT_CHECKED_OUT_COUNT = 0;

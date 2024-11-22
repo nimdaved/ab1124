@@ -45,7 +45,7 @@ public class Rental implements Serializable {
     @Min(value = 0)
     @Max(value = 100)
     @Column(name = "discount_percent", nullable = false)
-    private Integer discountPercent;
+    private Integer discountPercent = 0;
 
     @NotNull
     @Enumerated(EnumType.STRING)

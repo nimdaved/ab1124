@@ -64,7 +64,7 @@ class ToolResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Tool createEntity() {
-        return new Tool().code(UUID.randomUUID().toString()).toolType(DEFAULT_TOOL_TYPE).brand(DEFAULT_BRAND);
+        return new Tool().code(UUID.randomUUID().toString().substring(0, 4)).toolType(DEFAULT_TOOL_TYPE).brand(DEFAULT_BRAND);
     }
 
     /**
@@ -74,7 +74,7 @@ class ToolResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Tool createUpdatedEntity() {
-        return new Tool().code(UUID.randomUUID().toString()).toolType(UPDATED_TOOL_TYPE).brand(UPDATED_BRAND);
+        return new Tool().code(UUID.randomUUID().toString().substring(0, 4)).toolType(UPDATED_TOOL_TYPE).brand(UPDATED_BRAND);
     }
 
     @BeforeEach
@@ -165,7 +165,7 @@ class ToolResourceIT {
     @Transactional
     void getAllTools() throws Exception {
         // Initialize the database
-        tool.setCode(UUID.randomUUID().toString());
+        tool.setCode(UUID.randomUUID().toString().substring(0, 4));
         insertedTool = toolRepository.saveAndFlush(tool);
 
         // Get all the toolList
@@ -182,7 +182,7 @@ class ToolResourceIT {
     @Transactional
     void getTool() throws Exception {
         // Initialize the database
-        tool.setCode(UUID.randomUUID().toString());
+        tool.setCode(UUID.randomUUID().toString().substring(0, 4));
         insertedTool = toolRepository.saveAndFlush(tool);
 
         // Get the tool
@@ -206,7 +206,7 @@ class ToolResourceIT {
     @Transactional
     void putExistingTool() throws Exception {
         // Initialize the database
-        tool.setCode(UUID.randomUUID().toString());
+        tool.setCode(UUID.randomUUID().toString().substring(0, 4));
         insertedTool = toolRepository.saveAndFlush(tool);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
@@ -234,7 +234,7 @@ class ToolResourceIT {
     @Transactional
     void putNonExistingTool() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        tool.setCode(UUID.randomUUID().toString());
+        tool.setCode(UUID.randomUUID().toString().substring(0, 4));
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restToolMockMvc
@@ -249,7 +249,7 @@ class ToolResourceIT {
     @Transactional
     void putWithIdMismatchTool() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        tool.setCode(UUID.randomUUID().toString());
+        tool.setCode(UUID.randomUUID().toString().substring(0, 4));
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restToolMockMvc
@@ -283,7 +283,7 @@ class ToolResourceIT {
     @Transactional
     void partialUpdateToolWithPatch() throws Exception {
         // Initialize the database
-        tool.setCode(UUID.randomUUID().toString());
+        tool.setCode(UUID.randomUUID().toString().substring(0, 4));
         insertedTool = toolRepository.saveAndFlush(tool);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
@@ -312,7 +312,7 @@ class ToolResourceIT {
     @Transactional
     void fullUpdateToolWithPatch() throws Exception {
         // Initialize the database
-        tool.setCode(UUID.randomUUID().toString());
+        tool.setCode(UUID.randomUUID().toString().substring(0, 4));
         insertedTool = toolRepository.saveAndFlush(tool);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
@@ -341,7 +341,7 @@ class ToolResourceIT {
     @Transactional
     void patchNonExistingTool() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        tool.setCode(UUID.randomUUID().toString());
+        tool.setCode(UUID.randomUUID().toString().substring(0, 4));
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restToolMockMvc
@@ -358,7 +358,7 @@ class ToolResourceIT {
     @Transactional
     void patchWithIdMismatchTool() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        tool.setCode(UUID.randomUUID().toString());
+        tool.setCode(UUID.randomUUID().toString().substring(0, 4));
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restToolMockMvc
@@ -377,7 +377,7 @@ class ToolResourceIT {
     @Transactional
     void patchWithMissingIdPathParamTool() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        tool.setCode(UUID.randomUUID().toString());
+        tool.setCode(UUID.randomUUID().toString().substring(0, 4));
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restToolMockMvc
@@ -392,7 +392,7 @@ class ToolResourceIT {
     @Transactional
     void deleteTool() throws Exception {
         // Initialize the database
-        tool.setCode(UUID.randomUUID().toString());
+        tool.setCode(UUID.randomUUID().toString().substring(0, 4));
         insertedTool = toolRepository.saveAndFlush(tool);
 
         long databaseSizeBeforeDelete = getRepositoryCount();

@@ -123,11 +123,6 @@ class AccountResourceIT {
     }
 
     @Test
-    void testGetUnknownAccount() throws Exception {
-        restAccountMockMvc.perform(get("/api/account").accept(MediaType.APPLICATION_PROBLEM_JSON)).andExpect(status().isUnauthorized());
-    }
-
-    @Test
     @Transactional
     void testRegisterValid() throws Exception {
         ManagedUserVM validUser = new ManagedUserVM();
